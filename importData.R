@@ -17,3 +17,8 @@ initGPlot <- ggplot(aprData, aes(PeriodStart, TOTAL)) +
   geom_line() +
   labs(x = "Date", y = "Total Trials", title ="Total Trial Volume to April 2018")
 plot(initGPlot)
+
+# Set up timeseries
+tsAprTotal <- ts(aprData$TOTAL, frequency = 12, start = c(2008, 1), end = c(2018, 2))
+tsAprTEW <- ts(aprData$totalTEW, frequency = 12, start = c(2008, 1), end = c(2018, 2))
+tsAprIO <- ts(aprData$totalIO, frequency = 12, start = c(2008, 1), end = c(2018, 2))
