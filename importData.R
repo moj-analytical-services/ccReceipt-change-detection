@@ -2,23 +2,21 @@
 
 # Import and label data table
 library(tidyverse); library(lubridate); library(stringr)
-aprData <- s3tools::s3_path_to_full_df("alpha-bjml-personalpractice/changeDetection/totalsApr18.csv") %>% as.tibble()
-colnames(aprData) <- c("Period", "totalTEW", "totalIO", "TOTAL")
-head(aprData)
+aprData <- s3tools::s3_path_to_full_df("alpha-bjml-personalpractice/changeDetection/alldataApr18.csv") %>% as.tibble()
+aprData.namesdict <- data.frame("name.long" = colnames(aprData))
+colnames(aprData) <- c("PeriodStart",
+                       "violence.EW", "sexual.EW", "robbery.EW", "theft.EW", "damagearson.EW", "drug.EW", "poweapons.EW", "porder.EW", "misc.EW", "fraud.EW", "snm.EW",
+                       "violence.IO", "sexual.IO", "robbery.IO", "theft.IO", "damagearson.IO", "drug.IO", "poweapons.IO", "porder.IO", "misc.IO", "fraud.IO", "snm.IO",
+                       "SENTENCES", "APPEALS",
+                       "TRIALS.EW", "TRIALS.IO", "TRIALS.TOTAL",
+                       "GTOTAL")
+aprData.namesdict <- cbind(aprData.namesdict, "name.short" = colnames(aprData))
 
-# Get Period into usable date format (defaulted to start of month)
-aprData$Period <- str_c("01 ", aprData$Period) # for Date reading
-aprData$PeriodStart <- as.Date(aprData$Period, "%d %b-%y")
-aprData$Period <- substr(aprData$Period,4,10) # revert col. 1
-head(aprData, 5); tail(aprData, 5)
+# Work out parameters for the timeseries
+aprData$PeriodStart <- paste("01", aprData$PeriodStart) %>% as.Date("%d %b-%y")
+aprData.startv <- c(year(min(aprData$PeriodStart)), month(min(aprData$PeriodStart)))
+aprData.endv <- c(year(max(aprData$PeriodStart)), month(max(aprData$PeriodStart)))
 
-# Initial plot
-initGPlot <- ggplot(aprData, aes(PeriodStart, TOTAL)) + 
-  geom_line() +
-  labs(x = "Date", y = "Total Trials", title ="Total Trial Volume to April 2018")
-plot(initGPlot)
-
-# Set up timeseries
-tsAprTotal <- ts(aprData$TOTAL, frequency = 12, start = c(2008, 1), end = c(2018, 2))
-tsAprTEW <- ts(aprData$totalTEW, frequency = 12, start = c(2008, 1), end = c(2018, 2))
-tsAprIO <- ts(aprData$totalIO, frequency = 12, start = c(2008, 1), end = c(2018, 2))
+# Cut 'PeriodStart' and convert CC reciepts data to a timeseries
+aprData <- aprData %>% select(-PeriodStart)
+aprData <- ts(aprData, frequency = 12, start = aprData.startv, end = aprData.endv)
