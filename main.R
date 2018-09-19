@@ -3,6 +3,8 @@ source('importData.R') # OUT: aprData timeseries, use aprData.namesdict for dict
 
 ## TS Explore [NOT USED, WILL NOT WORK]
 plot(tsAprTotal)
+tsAprTotal <- ts(aprData$TOTAL, frequency = 12, start = c(2008, 1), end = c(2018, 2))
+  plot(tsAprTotal)
 dcAprTotal <- decompose(tsAprTotal, type = "additive")
   plot(dcAprTotal)
 tindex <- 1:length(aprData$TOTAL) # index times
