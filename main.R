@@ -1,5 +1,6 @@
 ## Import April 18 CC data and display initial plot
 source('importData.R') # OUT: aprData timeseries, use aprData.namesdict for dictionary of column names
+config <- read.table("config.txt", header=TRUE, sep="=", row.names=1, strip.white=TRUE, stringsAsFactors=FALSE)
 
 ## TS Explore [NOT USED, WILL NOT WORK]
 plot(tsAprTotal)
@@ -31,10 +32,10 @@ brDates <- function(brData){
 }
 
 ## STRUCCHANGE// level breaks
-column.choice <- "robbery.IO" # Choose offence type (name.short) from aprData.namesdict
+column.choice <- config["offence.choice", "VALUE"] # Choose offence type (name.short) from aprData.namesdict and put into config.txt
 brApr.level <- breakpoints(aprData[,column.choice] ~ 1, h = 0.1) # ~1 is LEVELS
 summary(brApr.level); plot(brApr.level)
-struccPlot(aprData[,column.choice], brData = brApr.level, nBreak = 2)
+struccPlot(aprData[,column.choice], brData = brApr.level, nBreak = 4)
 
 ## STRUCCHANGE // trend breaks
 column.choice <- column.choice # Option to change offence here
