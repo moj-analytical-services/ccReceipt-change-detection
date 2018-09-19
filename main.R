@@ -1,7 +1,7 @@
 ## Import April 18 CC data and display initial plot
-source('importData.R') # OUT: aprData tibble, totalTEW/totalIO/TOTAL monthly Jan01-Feb18
+source('importData.R') # OUT: aprData timeseries, use aprData.namesdict for dictionary of column names
 
-## TS Explore
+## TS Explore [NOT USED, WILL NOT WORK]
 plot(tsAprTotal)
 dcAprTotal <- decompose(tsAprTotal, type = "additive")
   plot(dcAprTotal)
@@ -10,7 +10,6 @@ fitApr <- ts(loess(aprData$TOTAL ~ tindex, span = 0.1)$fitted, frequency = 12, s
 plot(tsAprTotal); lines(fitApr, col  = 4)
 
 ## STRUCCHANGE // setup and useful functions
-packages.install("strucchange")
 library(strucchange)
 struccPlot <- function(tsData, brData, nBreak){
   # Displays chosen number of breaks on base timeseries datam with location error bars
@@ -30,23 +29,23 @@ brDates <- function(brData){
 }
 
 ## STRUCCHANGE// level breaks
-brAprTotal_l <- breakpoints(tsAprTotal ~ 1, h = 0.1) # ~1 is LEVELS
-summary(brAprTotal_l); plot(brAprTotal_l)
-struccPlot(tsAprTotal, brData = brAprTotal_l, nBreak = 4)
-
+column.choice <- "robbery.IO" # Choose offence type (name.short) from aprData.namesdict
+brApr.level <- breakpoints(aprData[,column.choice] ~ 1, h = 0.1) # ~1 is LEVELS
+summary(brApr.level); plot(brApr.level)
+struccPlot(aprData[,column.choice], brData = brApr.level, nBreak = 2)
 
 ## STRUCCHANGE // trend breaks
+column.choice <- column.choice # Option to change offence here
+tindex <- 1:length(aprData[,column.choice]) # Index times
+
 trend_fit <- lm(tsAprTotal ~ tindex) # linear model
   summary(trend_fit) # check LR model is signif
-brAprTotal_t <- breakpoints(tsAprTotal ~ tindex, h = 0.1) # ~ t is TREND (LR)
-summary(brAprTotal_t); plot(brAprTotal_t) # choose nBreak for min BIC
-struccPlot(tsAprTotal, brData = brAprTotal_t, nBreak = 2)
-brDates(breakdates(brAprTotal_t, breaks = 2))
-breakdates(brAprTotal_t, breaks = 2, format.times = TRUE)
-
-brAprTEW_t <- breakpoints(tsAprTEW ~ tindex, h = 0.1)
-summary(brAprTEW_t); plot(brAprTEW_t)
-struccPlot(tsAprTEW, brData = brAprTEW_t, nBreak=2)
+  
+brApr.trend <- breakpoints(aprData[,column.choice] ~ tindex, h = 0.1) # ~ t is TREND (LR)
+summary(brApr.trend); plot(brApr.trend) # choose nBreak for min BIC
+struccPlot(aprData[,column.choice], brData = brApr.trend, nBreak = 1)
+brDates(breakdates(brApr.trend, breaks = 1))
+breakdates(brApr.trend, breaks = 1, format.times = TRUE)
 
 ## STRUCCHANGE // polynomial fitting breaks
 # fit to 2o polynomial using lm(tsAprTotal ~ tt + I(tt^2))
