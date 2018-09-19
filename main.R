@@ -34,8 +34,9 @@ brDates <- function(brData){
 ## STRUCCHANGE// level breaks
 column.choice <- config["offence.choice", "VALUE"] # Choose offence type (name.short) from aprData.namesdict and put into config.txt
 brApr.level <- breakpoints(aprData[,column.choice] ~ 1, h = 0.1) # ~1 is LEVELS
-summary(brApr.level); plot(brApr.level)
-struccPlot(aprData[,column.choice], brData = brApr.level, nBreak = 4)
+summary(brApr.level); plot(brApr.level) # Choose nBreak here and put back into config [RELOAD]
+nBreak.level <- config["nBreak.level", "VALUE"] %>% as.numeric()
+struccPlot(aprData[,column.choice], brData = brApr.level, nBreak = nBreak.level)
 
 ## STRUCCHANGE // trend breaks
 column.choice <- column.choice # Option to change offence here
@@ -46,9 +47,10 @@ trend_fit <- lm(tsAprTotal ~ tindex) # linear model
   
 brApr.trend <- breakpoints(aprData[,column.choice] ~ tindex, h = 0.1) # ~ t is TREND (LR)
 summary(brApr.trend); plot(brApr.trend) # choose nBreak for min BIC
-struccPlot(aprData[,column.choice], brData = brApr.trend, nBreak = 1)
-brDates(breakdates(brApr.trend, breaks = 1))
-breakdates(brApr.trend, breaks = 1, format.times = TRUE)
+nBreak.level <- config["nBreak.trend", "VALUE"] %>% as.numeric()
+struccPlot(aprData[,column.choice], brData = brApr.trend, nBreak = nBreak.trend)
+brDates(breakdates(brApr.trend, breaks = nBreak.trend))
+breakdates(brApr.trend, breaks = nBreak.trend, format.times = TRUE)
 
 ## STRUCCHANGE // polynomial fitting breaks
 # fit to 2o polynomial using lm(tsAprTotal ~ tt + I(tt^2))

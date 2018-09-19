@@ -1,2 +1,5 @@
 SETTING = VALUE
-offence.choice = robbery.IO
+dataFile = alpha-c3pm2/changeDetection/alldataApr18.csv
+offence.choice = misc.EW
+nBreak.level = 3
+nBreak.trend = 4

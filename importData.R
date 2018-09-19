@@ -1,8 +1,11 @@
 ## Initial data import for strucchange
+# Load config file
+config <- read.table("config.txt", header=TRUE, sep="=", row.names=1, strip.white=TRUE, stringsAsFactors=FALSE)
 
 # Import and label data table
 library(tidyverse); library(lubridate); library(stringr)
-aprData <- s3tools::s3_path_to_full_df("alpha-bjml-personalpractice/changeDetection/alldataApr18.csv") %>% as.tibble()
+dataFile.path <- config["dataFile", "VALUE"]
+aprData <- s3tools::s3_path_to_full_df(dataFile.path) %>% as.tibble()
 aprData.namesdict <- data.frame("name.long" = colnames(aprData))
 colnames(aprData) <- c("PeriodStart",
                        "violence.EW", "sexual.EW", "robbery.EW", "theft.EW", "damagearson.EW", "drug.EW", "poweapons.EW", "porder.EW", "misc.EW", "fraud.EW", "snm.EW",
