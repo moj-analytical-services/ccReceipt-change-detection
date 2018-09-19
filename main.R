@@ -46,8 +46,8 @@ trend_fit <- lm(tsAprTotal ~ tindex) # linear model
   summary(trend_fit) # check LR model is signif
   
 brApr.trend <- breakpoints(aprData[,column.choice] ~ tindex, h = 0.1) # ~ t is TREND (LR)
-summary(brApr.trend); plot(brApr.trend) # choose nBreak for min BIC
-nBreak.level <- config["nBreak.trend", "VALUE"] %>% as.numeric()
+summary(brApr.trend); plot(brApr.trend) # choose nBreak for min BIC [RELOAD CONFIG]
+nBreak.trend <- config["nBreak.trend", "VALUE"] %>% as.numeric()
 struccPlot(aprData[,column.choice], brData = brApr.trend, nBreak = nBreak.trend)
 brDates(breakdates(brApr.trend, breaks = nBreak.trend))
 breakdates(brApr.trend, breaks = nBreak.trend, format.times = TRUE)
